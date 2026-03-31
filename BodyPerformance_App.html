@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX · Body Performance Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #080c12;
+  --bg2:        #0d1420;
+  --bg3:        #111928;
+  --panel:      #141d2e;
+  --panel2:     #1a2540;
+  --border:     #1e2d47;
+  --border2:    #2a3d5e;
+  --teal:       #00e5c8;
+  --teal2:      #00b8a0;
+  --teal-dim:   rgba(0,229,200,0.12);
+  --teal-glow:  rgba(0,229,200,0.25);
+  --gold:       #f0a500;
+  --gold2:      #c8860a;
+  --gold-dim:   rgba(240,165,0,0.12);
+  --red:        #ff4060;
+  --red-dim:    rgba(255,64,96,0.12);
+  --green:      #00e064;
+  --green-dim:  rgba(0,224,100,0.1);
+  --blue:       #4d9fff;
+  --blue-dim:   rgba(77,159,255,0.1);
+  --text:       #c8d8ef;
+  --text2:      #7a93b8;
+  --text3:      #445972;
+  --white:      #eef4ff;
+  --font-head:  'Rajdhani', sans-serif;
+  --font-mono:  'Space Mono', monospace;
+  --font-body:  'Inter', sans-serif;
+  --radius:     8px;
+  --radius2:    14px;
+  --trans:      0.2s ease;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG TEXTURE ──────────────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── NAV ──────────────────────────────────────────────────────────────────── */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 62px;
+  background: rgba(8,12,18,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-head);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 3px; color: var(--white);
+}
+.nav-logo .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 10px var(--teal);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.nav-tabs { display: flex; gap: 4px; }
+.nav-tab {
+  padding: 6px 16px;
+  border: none; background: transparent;
+  font-family: var(--font-head); font-size: 13px;
+  font-weight: 600; letter-spacing: 1.5px;
+  color: var(--text2); cursor: pointer;
+  border-radius: var(--radius);
+  transition: var(--trans);
+  text-transform: uppercase;
+}
+.nav-tab:hover { color: var(--teal); background: var(--teal-dim); }
+.nav-tab.active { color: var(--teal); background: var(--teal-dim); border: 1px solid rgba(0,229,200,0.3); }
+
+.nav-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--teal2); background: var(--teal-dim);
+  border: 1px solid rgba(0,229,200,0.2);
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.hero {
+  padding: 52px 28px 32px;
+  background: linear-gradient(180deg, rgba(0,229,200,0.04) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+}
+.hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.hero-title {
+  font-family: var(--font-head);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 2px;
+  color: var(--white);
+}
+.hero-title .accent { color: var(--teal); }
+.hero-title .sub { color: var(--gold); }
+.hero-desc {
+  max-width: 520px;
+  font-size: 13px; line-height: 1.7;
+  color: var(--text2);
+  margin-top: 10px;
+}
+.hero-stats {
+  display: flex; gap: 16px; flex-shrink: 0;
+}
+.hero-stat {
+  text-align: center;
+  padding: 14px 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+}
+.hero-stat .val {
+  font-family: var(--font-mono); font-size: 22px;
+  color: var(--teal); font-weight: 700;
+  display: block;
+}
+.hero-stat .lbl {
+  font-size: 10px; color: var(--text3);
+  letter-spacing: 1px; text-transform: uppercase;
+  display: block; margin-top: 3px;
+}
+
+/* ── CLASS GUIDE PILLS ────────────────────────────────────────────────────── */
+.class-guide {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.class-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  font-size: 12px; font-family: var(--font-head);
+  font-weight: 600; letter-spacing: 1px;
+  cursor: default;
+}
+.class-pill.A { background: rgba(0,224,100,0.08); border-color: rgba(0,224,100,0.3); color: var(--green); }
+.class-pill.B { background: rgba(77,159,255,0.08); border-color: rgba(77,159,255,0.3); color: var(--blue); }
+.class-pill.C { background: rgba(240,165,0,0.08);  border-color: rgba(240,165,0,0.3);  color: var(--gold); }
+.class-pill.D { background: rgba(255,64,96,0.08);  border-color: rgba(255,64,96,0.3);  color: var(--red); }
+.class-pill .cls-badge {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.class-pill.A .cls-badge { background: rgba(0,224,100,0.2); }
+.class-pill.B .cls-badge { background: rgba(77,159,255,0.2); }
+.class-pill.C .cls-badge { background: rgba(240,165,0,0.2); }
+.class-pill.D .cls-badge { background: rgba(255,64,96,0.2); }
+
+/* ── PAGE SECTIONS ────────────────────────────────────────────────────────── */
+.page { display: none; padding: 28px; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SECTION HEADERS ──────────────────────────────────────────────────────── */
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+.section-header .sh-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border2), transparent);
+}
+.section-header h2 {
+  font-family: var(--font-head);
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 2px; color: var(--white);
+  text-transform: uppercase; white-space: nowrap;
+}
+.section-header .sh-tag {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--teal2); background: var(--teal-dim);
+  border: 1px solid rgba(0,229,200,0.2);
+  padding: 3px 8px; border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+/* ── PREDICT PAGE ─────────────────────────────────────────────────────────── */
+.predict-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+}
+
+/* ── FORM PANEL ───────────────────────────────────────────────────────────── */
+.form-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+}
+.form-panel-header {
+  padding: 14px 20px;
+  background: var(--panel2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.form-panel-header .icon {
+  width: 32px; height: 32px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--teal-dim); border: 1px solid rgba(0,229,200,0.3);
+  font-size: 15px;
+}
+.form-panel-header h3 {
+  font-family: var(--font-head); font-size: 15px;
+  font-weight: 700; letter-spacing: 1px; color: var(--white);
+  flex: 1;
+}
+.form-panel-header .hint {
+  font-size: 11px; color: var(--text3);
+  font-family: var(--font-mono);
+}
+
+.form-groups {
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* ── FIELDSET GROUP ───────────────────────────────────────────────────────── */
+.field-group-title {
+  font-family: var(--font-head); font-size: 11px;
+  font-weight: 700; letter-spacing: 2px;
+  color: var(--text3); text-transform: uppercase;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.field-group-title span { color: var(--teal); }
+
+/* ── FIELD ────────────────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-size: 11px; font-weight: 500;
+  color: var(--text2); letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 6px;
+}
+.field label .unit {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); background: var(--bg3);
+  padding: 1px 5px; border-radius: 3px;
+}
+
+.slider-wrap { display: flex; align-items: center; gap: 10px; }
+.slider-wrap input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border2);
+  outline: none;
+  cursor: pointer;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 8px var(--teal-glow);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.slider-val {
+  font-family: var(--font-mono); font-size: 13px;
+  font-weight: 700; color: var(--teal);
+  min-width: 40px; text-align: right;
+}
+
+/* ── GENDER TOGGLE ────────────────────────────────────────────────────────── */
+.gender-toggle {
+  display: flex; gap: 6px;
+}
+.gender-btn {
+  flex: 1; padding: 9px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text2);
+  font-family: var(--font-head); font-size: 13px;
+  font-weight: 600; letter-spacing: 1px;
+  cursor: pointer; transition: var(--trans);
+  text-align: center;
+}
+.gender-btn:hover { border-color: var(--teal2); color: var(--teal); }
+.gender-btn.active {
+  background: var(--teal-dim);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* ── PREDICT BTN ──────────────────────────────────────────────────────────── */
+.predict-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--teal), var(--teal2));
+  border: none; border-radius: var(--radius);
+  color: var(--bg); font-family: var(--font-head);
+  font-size: 16px; font-weight: 700; letter-spacing: 2px;
+  cursor: pointer; margin-top: 4px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  position: relative; overflow: hidden;
+}
+.predict-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.predict-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,229,200,0.3); }
+.predict-btn:hover::after { opacity: 1; }
+.predict-btn:active { transform: translateY(0); }
+
+/* ── RESULTS PANEL ────────────────────────────────────────────────────────── */
+.results-panel {
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.result-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  transition: var(--trans);
+}
+
+/* ── CLASS RESULT ─────────────────────────────────────────────────────────── */
+.class-result-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  transition: border-color 0.4s;
+}
+.class-result-card.class-A { border-color: rgba(0,224,100,0.4); }
+.class-result-card.class-B { border-color: rgba(77,159,255,0.4); }
+.class-result-card.class-C { border-color: rgba(240,165,0,0.4); }
+.class-result-card.class-D { border-color: rgba(255,64,96,0.4); }
+
+.class-result-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.class-result-header .label {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.class-result-main {
+  display: flex; align-items: center; gap: 14px;
+}
+.class-badge-big {
+  width: 58px; height: 58px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-size: 32px; font-weight: 700;
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+.class-badge-big.A { background: rgba(0,224,100,0.15); color: var(--green); border: 2px solid rgba(0,224,100,0.4); }
+.class-badge-big.B { background: rgba(77,159,255,0.15); color: var(--blue);  border: 2px solid rgba(77,159,255,0.4); }
+.class-badge-big.C { background: rgba(240,165,0,0.15);  color: var(--gold);  border: 2px solid rgba(240,165,0,0.4); }
+.class-badge-big.D { background: rgba(255,64,96,0.15);  color: var(--red);   border: 2px solid rgba(255,64,96,0.4); }
+.class-badge-big.placeholder { background: var(--bg3); color: var(--text3); border: 2px dashed var(--border2); font-size: 22px; }
+
+.class-info .class-name {
+  font-family: var(--font-head); font-size: 19px;
+  font-weight: 700; color: var(--white); letter-spacing: 1px;
+}
+.class-info .class-desc {
+  font-size: 12px; color: var(--text2);
+  margin-top: 3px; line-height: 1.5;
+}
+
+/* ── PROB BARS ────────────────────────────────────────────────────────────── */
+.prob-section { padding: 14px 18px; }
+.prob-section .prob-title {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.prob-bar-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 7px;
+}
+.prob-bar-row .cls-lbl {
+  font-family: var(--font-head); font-size: 13px;
+  font-weight: 700; width: 18px; text-align: center;
+}
+.prob-bar-row .cls-lbl.A { color: var(--green); }
+.prob-bar-row .cls-lbl.B { color: var(--blue); }
+.prob-bar-row .cls-lbl.C { color: var(--gold); }
+.prob-bar-row .cls-lbl.D { color: var(--red); }
+.prob-track {
+  flex: 1; height: 8px;
+  background: var(--bg3); border-radius: 4px;
+  overflow: hidden;
+}
+.prob-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.prob-fill.A { background: linear-gradient(90deg, var(--green), #00ff80); }
+.prob-fill.B { background: linear-gradient(90deg, var(--blue), #80bfff); }
+.prob-fill.C { background: linear-gradient(90deg, var(--gold), #ffc840); }
+.prob-fill.D { background: linear-gradient(90deg, var(--red), #ff8090); }
+.prob-pct {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text2); min-width: 35px; text-align: right;
+}
+
+/* ── JUMP CARD ────────────────────────────────────────────────────────────── */
+.jump-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.jump-icon {
+  width: 48px; height: 48px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gold-dim); border: 1px solid rgba(240,165,0,0.3);
+  font-size: 22px; flex-shrink: 0;
+}
+.jump-info { flex: 1; }
+.jump-info .jlabel {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.jump-val {
+  font-family: var(--font-head); font-size: 28px;
+  font-weight: 700; color: var(--gold);
+  letter-spacing: 1px;
+}
+.jump-val .unit { font-size: 14px; color: var(--gold2); }
+.jump-benchmark {
+  font-size: 11px; color: var(--text2); margin-top: 3px;
+}
+
+/* ── RADAR / PROFILE CHART ─────────────────────────────────────────────────── */
+.radar-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 18px;
+}
+.radar-card h4 {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+#radarCanvas { width: 100%; max-width: 340px; display: block; margin: 0 auto; }
+
+/* ── TIPS CARD ────────────────────────────────────────────────────────────── */
+.tips-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 16px 18px;
+}
+.tips-card h4 {
+  font-family: var(--font-head); font-size: 13px;
+  font-weight: 700; letter-spacing: 1px; color: var(--white);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tip-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--text2); line-height: 1.5;
+}
+.tip-item:last-child { border-bottom: none; }
+.tip-icon { color: var(--teal); flex-shrink: 0; margin-top: 1px; }
+
+/* ── PLACEHOLDER STATE ────────────────────────────────────────────────────── */
+.placeholder-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 20px; text-align: center;
+  gap: 10px;
+}
+.placeholder-state .ph-icon { font-size: 36px; opacity: 0.3; }
+.placeholder-state .ph-title {
+  font-family: var(--font-head); font-size: 15px;
+  color: var(--text2); letter-spacing: 1px;
+}
+.placeholder-state .ph-hint { font-size: 12px; color: var(--text3); }
+
+/* ── ABOUT PAGE ───────────────────────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.about-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 20px;
+  transition: border-color var(--trans);
+}
+.about-card:hover { border-color: var(--border2); }
+.about-card .ac-icon {
+  font-size: 24px; margin-bottom: 10px;
+  display: block;
+}
+.about-card h3 {
+  font-family: var(--font-head); font-size: 15px;
+  font-weight: 700; letter-spacing: 1px; color: var(--white);
+  margin-bottom: 6px;
+}
+.about-card p {
+  font-size: 12px; color: var(--text2); line-height: 1.65;
+}
+
+/* ── MODEL LEADERBOARD ────────────────────────────────────────────────────── */
+.leaderboard {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.leaderboard-header {
+  padding: 12px 18px;
+  background: var(--panel2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  font-family: var(--font-head); font-size: 13px;
+  font-weight: 700; letter-spacing: 1.5px; color: var(--text2);
+  text-transform: uppercase; gap: 10px;
+}
+.lb-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 80px 80px 80px 80px;
+  gap: 8px;
+  align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--trans);
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: var(--bg3); }
+.lb-row.top { background: rgba(0,229,200,0.04); }
+.lb-rank { font-family: var(--font-mono); font-size: 12px; color: var(--text3); }
+.lb-rank.gold { color: var(--gold); font-weight: 700; }
+.lb-model { font-family: var(--font-body); font-size: 13px; color: var(--white); font-weight: 500; }
+.lb-metric { font-family: var(--font-mono); font-size: 12px; color: var(--text2); text-align: right; }
+.lb-header { font-size: 10px; color: var(--text3); text-align: right; letter-spacing: 1px; text-transform: uppercase; }
+.lb-bar-col { display: flex; align-items: center; gap: 6px; }
+.lb-bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.lb-bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal2)); border-radius: 3px; }
+.lb-bar-fill.rf { background: linear-gradient(90deg, var(--teal), #00b8a0); }
+.lb-bar-fill.nn { background: linear-gradient(90deg, var(--blue), #2d7fd6); }
+.lb-bar-fill.svm { background: linear-gradient(90deg, var(--gold), #c8860a); }
+.lb-bar-fill.lr  { background: linear-gradient(90deg, #a061f0, #7a40c8); }
+.lb-bar-fill.knn { background: linear-gradient(90deg, var(--red), #c82040); }
+
+/* ── FEATURE IMPORTANCE ───────────────────────────────────────────────────── */
+.feat-imp {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 18px;
+}
+.feat-imp h3 {
+  font-family: var(--font-head); font-size: 15px;
+  font-weight: 700; letter-spacing: 1px; color: var(--white);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.feat-imp h3 .badge {
+  font-size: 10px; color: var(--teal2); background: var(--teal-dim);
+  border: 1px solid rgba(0,229,200,0.2);
+  padding: 2px 7px; border-radius: 4px;
+  letter-spacing: 1px;
+}
+.feat-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.feat-name {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text2); width: 190px; flex-shrink: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.feat-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.feat-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--teal), #00b8a0);
+  transition: width 1.2s cubic-bezier(0.34,1.2,0.64,1);
+}
+.feat-score {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--teal); min-width: 40px; text-align: right;
+}
+
+/* ── DATASET SECTION ──────────────────────────────────────────────────────── */
+.dataset-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px; margin-bottom: 20px;
+}
+.ds-stat {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 14px 16px;
+}
+.ds-stat .dsv {
+  font-family: var(--font-mono); font-size: 20px;
+  font-weight: 700; color: var(--teal); display: block;
+}
+.ds-stat .dsl {
+  font-size: 11px; color: var(--text3);
+  letter-spacing: 0.5px; margin-top: 3px; display: block;
+}
+
+/* ── PIPELINE VIZ ─────────────────────────────────────────────────────────── */
+.pipeline {
+  display: flex; align-items: center; gap: 0;
+  flex-wrap: nowrap; overflow-x: auto;
+  padding: 16px 0; margin-bottom: 20px;
+}
+.pipeline::-webkit-scrollbar { height: 4px; }
+.pipeline::-webkit-scrollbar-track { background: var(--bg3); }
+.pipeline::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.pipe-step {
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 100px;
+  transition: var(--trans);
+}
+.pipe-step:hover { border-color: var(--teal2); }
+.pipe-step .ps-icon { font-size: 20px; }
+.pipe-step .ps-label {
+  font-family: var(--font-head); font-size: 11px;
+  font-weight: 700; letter-spacing: 1px;
+  color: var(--text2); text-align: center;
+  text-transform: uppercase;
+}
+.pipe-step .ps-tag {
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--text3); text-align: center;
+}
+.pipe-arrow {
+  color: var(--border2); font-size: 16px; flex-shrink: 0;
+  padding: 0 4px;
+}
+
+/* ── COLUMN TABLE ─────────────────────────────────────────────────────────── */
+.col-table {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+  width: 100%;
+}
+.col-table table {
+  width: 100%; border-collapse: collapse;
+}
+.col-table th {
+  padding: 10px 14px;
+  background: var(--panel2);
+  font-family: var(--font-head); font-size: 11px;
+  font-weight: 700; letter-spacing: 1.5px;
+  color: var(--text3); text-transform: uppercase;
+  text-align: left; border-bottom: 1px solid var(--border);
+}
+.col-table td {
+  padding: 9px 14px;
+  font-size: 12px; color: var(--text2);
+  border-bottom: 1px solid var(--border);
+}
+.col-table tr:last-child td { border-bottom: none; }
+.col-table tr:hover td { background: var(--bg3); }
+.col-table .col-name {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--teal); font-weight: 700;
+}
+.col-table .badge-num {
+  background: var(--blue-dim); color: var(--blue);
+  border: 1px solid rgba(77,159,255,0.2);
+  font-size: 10px; padding: 2px 6px; border-radius: 3px;
+  font-family: var(--font-mono);
+}
+.col-table .badge-cat {
+  background: var(--gold-dim); color: var(--gold);
+  border: 1px solid rgba(240,165,0,0.2);
+  font-size: 10px; padding: 2px 6px; border-radius: 3px;
+  font-family: var(--font-mono);
+}
+
+/* ── TOAST ────────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--panel);
+  border: 1px solid var(--teal);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--teal); z-index: 200;
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 24px rgba(0,229,200,0.2);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+footer {
+  margin-top: 40px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text3);
+}
+footer .ft-brand { color: var(--teal2); }
+
+/* ── LOADING SPINNER ──────────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .predict-layout { grid-template-columns: 1fr; }
+  .hero-top { flex-direction: column; }
+  .lb-row { grid-template-columns: 28px 1fr 70px 70px; }
+  .lb-row > *:nth-child(5), .lb-row > *:nth-child(6) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="dot"></div>
+    APEX
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('predict',this)">⚡ Predict</button>
+    <button class="nav-tab" onclick="showPage('models',this)">📊 Models</button>
+    <button class="nav-tab" onclick="showPage('about',this)">📋 Dataset</button>
+    <button class="nav-tab" onclick="showPage('plan',this)">🗺️ App Plan</button>
+  </div>
+  <div class="nav-badge">
+    <span>●</span> RF · 74.8% ACC
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-title">
+        BODY PERFORMANCE<br>
+        <span class="accent">INTELLIGENCE</span><br>
+        <span class="sub" style="font-size:0.52em;letter-spacing:1px;">PREDICT YOUR CLASS · ESTIMATE YOUR JUMP</span>
+      </div>
+      <p class="hero-desc">
+        Enter your physiological measurements and fitness test scores to instantly receive your predicted performance class (A–D) and estimated broad jump distance — powered by a Random Forest model trained on 13,393 real fitness evaluations.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="val">13,393</span><span class="lbl">Records</span></div>
+      <div class="hero-stat"><span class="val">74.8%</span><span class="lbl">Accuracy</span></div>
+      <div class="hero-stat"><span class="val">~0.99</span><span class="lbl">Jump R²</span></div>
+    </div>
+  </div>
+  <div class="class-guide">
+    <div class="class-pill A"><div class="cls-badge">A</div>Elite Performer — Top tier fitness across all metrics</div>
+    <div class="class-pill B"><div class="cls-badge">B</div>Above Average — Strong performance with minor gaps</div>
+    <div class="class-pill C"><div class="cls-badge">C</div>Average — Room for targeted improvement</div>
+    <div class="class-pill D"><div class="cls-badge">D</div>Below Average — Needs consistent training focus</div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: PREDICT ═══════════ -->
+<div id="page-predict" class="page active">
+  <div class="predict-layout">
+
+    <!-- LEFT: INPUT FORM -->
+    <div>
+      <div class="form-panel">
+        <div class="form-panel-header">
+          <div class="icon">👤</div>
+          <h3>PARTICIPANT PROFILE</h3>
+          <span class="hint">11 inputs required</span>
+        </div>
+        <div class="form-groups">
+
+          <!-- DEMOGRAPHICS -->
+          <div>
+            <div class="field-group-title"><span>01</span> — DEMOGRAPHICS</div>
+            <div class="form-group-row">
+              <div class="field">
+                <label>Age <span class="unit">yrs</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="age" min="18" max="80" value="35" oninput="updateVal('age',this.value)">
+                  <span class="slider-val" id="age-val">35</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Gender</label>
+                <div class="gender-toggle">
+                  <button class="gender-btn active" id="btn-M" onclick="setGender('M')">♂ MALE</button>
+                  <button class="gender-btn" id="btn-F" onclick="setGender('F')">♀ FEMALE</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BODY COMPOSITION -->
+          <div>
+            <div class="field-group-title"><span>02</span> — BODY COMPOSITION</div>
+            <div class="form-group-row">
+              <div class="field">
+                <label>Height <span class="unit">cm</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="height" min="140" max="200" value="170" oninput="updateVal('height',this.value)">
+                  <span class="slider-val" id="height-val">170</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Weight <span class="unit">kg</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="weight" min="30" max="150" value="70" step="0.5" oninput="updateVal('weight',this.value)">
+                  <span class="slider-val" id="weight-val">70</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Body Fat <span class="unit">%</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="fat" min="3" max="65" value="20" step="0.5" oninput="updateVal('fat',this.value)">
+                  <span class="slider-val" id="fat-val">20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOOD PRESSURE -->
+          <div>
+            <div class="field-group-title"><span>03</span> — CARDIOVASCULAR</div>
+            <div class="form-group-row">
+              <div class="field">
+                <label>Diastolic BP <span class="unit">mmHg</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="diastolic" min="40" max="130" value="80" oninput="updateVal('diastolic',this.value)">
+                  <span class="slider-val" id="diastolic-val">80</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Systolic BP <span class="unit">mmHg</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="systolic" min="70" max="200" value="120" oninput="updateVal('systolic',this.value)">
+                  <span class="slider-val" id="systolic-val">120</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FITNESS TESTS -->
+          <div>
+            <div class="field-group-title"><span>04</span> — FITNESS TEST RESULTS</div>
+            <div class="form-group-row">
+              <div class="field">
+                <label>Grip Force <span class="unit">kg</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="grip" min="0" max="70" value="35" step="0.5" oninput="updateVal('grip',this.value)">
+                  <span class="slider-val" id="grip-val">35</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Sit & Bend <span class="unit">cm</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="bend" min="-25" max="200" value="20" step="0.5" oninput="updateVal('bend',this.value)">
+                  <span class="slider-val" id="bend-val">20</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Sit-ups <span class="unit">reps</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="situps" min="0" max="80" value="35" oninput="updateVal('situps',this.value)">
+                  <span class="slider-val" id="situps-val">35</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Broad Jump <span class="unit">cm</span></label>
+                <div class="slider-wrap">
+                  <input type="range" id="jump" min="50" max="300" value="160" oninput="updateVal('jump',this.value)">
+                  <span class="slider-val" id="jump-val">160</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="predict-btn" onclick="runPredict()">
+            ⚡ ANALYZE PERFORMANCE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: RESULTS -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Placeholder -->
+      <div class="class-result-card" id="class-result-card">
+        <div class="placeholder-state" id="placeholder-state">
+          <div class="ph-icon">🎯</div>
+          <div class="ph-title">AWAITING INPUT</div>
+          <div class="ph-hint">Adjust sliders and click Analyze</div>
+        </div>
+        <div id="class-result-body" style="display:none;">
+          <div class="class-result-header">
+            <div class="label">PERFORMANCE CLASSIFICATION</div>
+            <div class="class-result-main">
+              <div class="class-badge-big placeholder" id="class-badge">?</div>
+              <div class="class-info">
+                <div class="class-name" id="class-name">—</div>
+                <div class="class-desc" id="class-desc">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="prob-section">
+            <div class="prob-title">CLASS PROBABILITIES</div>
+            <div class="prob-bar-row"><span class="cls-lbl A">A</span><div class="prob-track"><div class="prob-fill A" id="prob-A" style="width:0%"></div></div><span class="prob-pct" id="pct-A">0%</span></div>
+            <div class="prob-bar-row"><span class="cls-lbl B">B</span><div class="prob-track"><div class="prob-fill B" id="prob-B" style="width:0%"></div></div><span class="prob-pct" id="pct-B">0%</span></div>
+            <div class="prob-bar-row"><span class="cls-lbl C">C</span><div class="prob-track"><div class="prob-fill C" id="prob-C" style="width:0%"></div></div><span class="prob-pct" id="pct-C">0%</span></div>
+            <div class="prob-bar-row"><span class="cls-lbl D">D</span><div class="prob-track"><div class="prob-fill D" id="prob-D" style="width:0%"></div></div><span class="prob-pct" id="pct-D">0%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Broad Jump Prediction -->
+      <div class="jump-card" id="jump-card">
+        <div class="jump-icon">🏃</div>
+        <div class="jump-info">
+          <div class="jlabel">ESTIMATED BROAD JUMP</div>
+          <div class="jump-val" id="jump-pred">— <span class="unit">cm</span></div>
+          <div class="jump-benchmark" id="jump-bench">Run analysis to estimate broad jump distance</div>
+        </div>
+      </div>
+
+      <!-- Radar chart -->
+      <div class="radar-card">
+        <h4>PERFORMANCE PROFILE RADAR</h4>
+        <canvas id="radarCanvas" width="340" height="270"></canvas>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-card" id="tips-card">
+        <h4>💡 PERSONALIZED INSIGHTS</h4>
+        <div id="tips-list">
+          <div class="tip-item"><span class="tip-icon">›</span><span>Complete analysis to receive personalized insights.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: MODELS ═══════════ -->
+<div id="page-models" class="page">
+
+  <div class="section-header">
+    <h2>Model Performance</h2>
+    <span class="sh-tag">LEADERBOARD</span>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="leaderboard">
+    <div class="leaderboard-header">
+      <span>#</span>
+      <span>Model</span>
+      <span style="text-align:right">Accuracy</span>
+      <span style="text-align:right">Precision</span>
+      <span style="text-align:right">Recall</span>
+      <span style="text-align:right">F1</span>
+    </div>
+    <div class="lb-row top">
+      <span class="lb-rank gold">🥇</span>
+      <div class="lb-bar-col">
+        <div class="lb-bar"><div class="lb-bar-fill rf" style="width:94%"></div></div>
+        <span class="lb-model">Random Forest</span>
+      </div>
+      <span class="lb-metric" style="color:var(--teal)">74.8%</span>
+      <span class="lb-metric" style="color:var(--teal)">74.6%</span>
+      <span class="lb-metric" style="color:var(--teal)">74.8%</span>
+      <span class="lb-metric" style="color:var(--teal)">74.7%</span>
+    </div>
+    <div class="lb-row">
+      <span class="lb-rank" style="color:#aaa">🥈</span>
+      <div class="lb-bar-col">
+        <div class="lb-bar"><div class="lb-bar-fill nn" style="width:92%"></div></div>
+        <span class="lb-model">Neural Network (MLP)</span>
+      </div>
+      <span class="lb-metric">74.1%</span>
+      <span class="lb-metric">73.9%</span>
+      <span class="lb-metric">74.1%</span>
+      <span class="lb-metric">74.0%</span>
+    </div>
+    <div class="lb-row">
+      <span class="lb-rank" style="color:#cd7f32">🥉</span>
+      <div class="lb-bar-col">
+        <div class="lb-bar"><div class="lb-bar-fill svm" style="width:80%"></div></div>
+        <span class="lb-model">SVM (RBF Kernel)</span>
+      </div>
+      <span class="lb-metric">62.8%</span>
+      <span class="lb-metric">62.4%</span>
+      <span class="lb-metric">62.8%</span>
+      <span class="lb-metric">62.6%</span>
+    </div>
+    <div class="lb-row">
+      <span class="lb-rank">4</span>
+      <div class="lb-bar-col">
+        <div class="lb-bar"><div class="lb-bar-fill lr" style="width:72%"></div></div>
+        <span class="lb-model">Logistic Regression</span>
+      </div>
+      <span class="lb-metric">57.2%</span>
+      <span class="lb-metric">56.9%</span>
+      <span class="lb-metric">57.2%</span>
+      <span class="lb-metric">57.0%</span>
+    </div>
+    <div class="lb-row">
+      <span class="lb-rank">5</span>
+      <div class="lb-bar-col">
+        <div class="lb-bar"><div class="lb-bar-fill knn" style="width:65%"></div></div>
+        <span class="lb-model">KNN (k=15)</span>
+      </div>
+      <span class="lb-metric">51.8%</span>
+      <span class="lb-metric">51.5%</span>
+      <span class="lb-metric">51.8%</span>
+      <span class="lb-metric">51.6%</span>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px;">
+    <h2>Feature Importance</h2>
+    <span class="sh-tag">RANDOM FOREST</span>
+    <div class="sh-line"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="feat-imp">
+      <h3>Intrinsic RF Importance <span class="badge">GINI</span></h3>
+      <div class="feat-row"><span class="feat-name">sit_and_bend_forward_cm</span><div class="feat-track"><div class="feat-fill" style="width:100%"></div></div><span class="feat-score">0.261</span></div>
+      <div class="feat-row"><span class="feat-name">sit-ups counts</span><div class="feat-track"><div class="feat-fill" style="width:54%"></div></div><span class="feat-score">0.141</span></div>
+      <div class="feat-row"><span class="feat-name">body fat_%</span><div class="feat-track"><div class="feat-fill" style="width:46%"></div></div><span class="feat-score">0.119</span></div>
+      <div class="feat-row"><span class="feat-name">age</span><div class="feat-track"><div class="feat-fill" style="width:43%"></div></div><span class="feat-score">0.112</span></div>
+      <div class="feat-row"><span class="feat-name">weight_kg</span><div class="feat-track"><div class="feat-fill" style="width:36%"></div></div><span class="feat-score">0.093</span></div>
+      <div class="feat-row"><span class="feat-name">gripForce</span><div class="feat-track"><div class="feat-fill" style="width:31%"></div></div><span class="feat-score">0.081</span></div>
+      <div class="feat-row"><span class="feat-name">broad jump_cm</span><div class="feat-track"><div class="feat-fill" style="width:28%"></div></div><span class="feat-score">0.074</span></div>
+      <div class="feat-row"><span class="feat-name">height_cm</span><div class="feat-track"><div class="feat-fill" style="width:22%"></div></div><span class="feat-score">0.058</span></div>
+      <div class="feat-row"><span class="feat-name">systolic</span><div class="feat-track"><div class="feat-fill" style="width:19%"></div></div><span class="feat-score">0.031</span></div>
+      <div class="feat-row"><span class="feat-name">diastolic</span><div class="feat-track"><div class="feat-fill" style="width:15%"></div></div><span class="feat-score">0.019</span></div>
+    </div>
+    <div class="feat-imp">
+      <h3>Permutation Importance <span class="badge">MODEL-AGNOSTIC</span></h3>
+      <div class="feat-row"><span class="feat-name">sit_and_bend_forward_cm</span><div class="feat-track"><div class="feat-fill" style="width:100%"></div></div><span class="feat-score">0.254</span></div>
+      <div class="feat-row"><span class="feat-name">sit-ups counts</span><div class="feat-track"><div class="feat-fill" style="width:94%"></div></div><span class="feat-score">0.239</span></div>
+      <div class="feat-row"><span class="feat-name">age</span><div class="feat-track"><div class="feat-fill" style="width:53%"></div></div><span class="feat-score">0.135</span></div>
+      <div class="feat-row"><span class="feat-name">weight_kg</span><div class="feat-track"><div class="feat-fill" style="width:28%"></div></div><span class="feat-score">0.071</span></div>
+      <div class="feat-row"><span class="feat-name">gender</span><div class="feat-track"><div class="feat-fill" style="width:26%"></div></div><span class="feat-score">0.065</span></div>
+      <div class="feat-row"><span class="feat-name">body fat_%</span><div class="feat-track"><div class="feat-fill" style="width:24%"></div></div><span class="feat-score">0.062</span></div>
+      <div class="feat-row"><span class="feat-name">gripForce</span><div class="feat-track"><div class="feat-fill" style="width:22%"></div></div><span class="feat-score">0.055</span></div>
+      <div class="feat-row"><span class="feat-name">broad jump_cm</span><div class="feat-track"><div class="feat-fill" style="width:16%"></div></div><span class="feat-score">0.041</span></div>
+      <div class="feat-row"><span class="feat-name">height_cm</span><div class="feat-track"><div class="feat-fill" style="width:6%"></div></div><span class="feat-score">0.014</span></div>
+      <div class="feat-row"><span class="feat-name">systolic</span><div class="feat-track"><div class="feat-fill" style="width:2%"></div></div><span class="feat-score">0.003</span></div>
+    </div>
+  </div>
+
+  <!-- Regression Section -->
+  <div class="section-header" style="margin-top:28px;">
+    <h2>Regression Models</h2>
+    <span class="sh-tag">BROAD JUMP PREDICTION</span>
+    <div class="sh-line"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+    <div class="result-card" style="padding:18px;border-top:3px solid var(--teal);">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;margin-bottom:8px;">RANDOM FOREST REGRESSOR</div>
+      <div style="font-family:var(--font-head);font-size:36px;font-weight:700;color:var(--teal);">~0.99</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">R² Score · Near-perfect fit</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;">Captures non-linear interactions between fitness metrics and explosive power</div>
+    </div>
+    <div class="result-card" style="padding:18px;border-top:3px solid var(--blue);">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;margin-bottom:8px;">LINEAR REGRESSION</div>
+      <div style="font-family:var(--font-head);font-size:36px;font-weight:700;color:var(--blue);">~0.95</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">R² Score · Strong linear fit</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;">Strong linear relationship between body composition and jump distance</div>
+    </div>
+    <div class="result-card" style="padding:18px;border-top:3px solid var(--gold);">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;margin-bottom:8px;">SVR (RBF KERNEL)</div>
+      <div style="font-family:var(--font-head);font-size:36px;font-weight:700;color:var(--gold);">~0.91</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">R² Score · Good non-linear fit</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;">Good performance; slightly weaker than Random Forest ensemble approach</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: ABOUT ═══════════ -->
+<div id="page-about" class="page">
+
+  <div class="section-header">
+    <h2>Dataset Overview</h2>
+    <span class="sh-tag">BODY PERFORMANCE</span>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="dataset-stats">
+    <div class="ds-stat"><span class="dsv">13,393</span><span class="dsl">Total Records</span></div>
+    <div class="ds-stat"><span class="dsv">12</span><span class="dsl">Feature Columns</span></div>
+    <div class="ds-stat"><span class="dsv">11</span><span class="dsl">Input Features</span></div>
+    <div class="ds-stat"><span class="dsv">4</span><span class="dsl">Performance Classes</span></div>
+    <div class="ds-stat"><span class="dsv">0</span><span class="dsl">Missing Values</span></div>
+    <div class="ds-stat"><span class="dsv">~3,348</span><span class="dsl">Records per Class</span></div>
+  </div>
+
+  <div class="section-header" style="margin-top:24px;">
+    <h2>ML Pipeline</h2>
+    <span class="sh-tag">END-TO-END</span>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-step"><div class="ps-icon">📥</div><div class="ps-label">Load</div><div class="ps-tag">CSV · 13,393 rows</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">🧹</div><div class="ps-label">Clean</div><div class="ps-tag">Duplicates · BP logic</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">📊</div><div class="ps-label">EDA</div><div class="ps-tag">Histograms · Heatmap</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">⚙️</div><div class="ps-label">Engineer</div><div class="ps-tag">Encode · Scale</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">✂️</div><div class="ps-label">Split</div><div class="ps-tag">70/30 · 80/20 · CV</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">🤖</div><div class="ps-label">Train</div><div class="ps-tag">5 classifiers · 3 reg.</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">📈</div><div class="ps-label">Evaluate</div><div class="ps-tag">Acc · F1 · CM</div></div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-step"><div class="ps-icon">🚀</div><div class="ps-label">Deploy</div><div class="ps-tag">Gradio · APEX App</div></div>
+  </div>
+
+  <div class="section-header" style="margin-top:24px;">
+    <h2>Column Definitions</h2>
+    <span class="sh-tag">SCHEMA</span>
+    <div class="sh-line"></div>
+  </div>
+  <div class="col-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Column</th><th>Type</th><th>Description</th><th>Valid Range</th><th>ML Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">age</td><td><span class="badge-num">INT</span></td><td>Participant age in years</td><td>18 – 80</td><td>Feature</td></tr>
+        <tr><td class="col-name">gender</td><td><span class="badge-cat">CAT</span></td><td>Biological sex — M or F</td><td>M / F</td><td>Feature (encoded)</td></tr>
+        <tr><td class="col-name">height_cm</td><td><span class="badge-num">FLOAT</span></td><td>Standing height in centimetres</td><td>100 – 220</td><td>Feature</td></tr>
+        <tr><td class="col-name">weight_kg</td><td><span class="badge-num">FLOAT</span></td><td>Body weight in kilograms</td><td>20 – 250</td><td>Feature</td></tr>
+        <tr><td class="col-name">body fat_%</td><td><span class="badge-num">FLOAT</span></td><td>Body fat percentage</td><td>3 – 65%</td><td>Feature</td></tr>
+        <tr><td class="col-name">diastolic</td><td><span class="badge-num">INT</span></td><td>Diastolic blood pressure</td><td>40 – 130 mmHg</td><td>Feature</td></tr>
+        <tr><td class="col-name">systolic</td><td><span class="badge-num">INT</span></td><td>Systolic blood pressure (must exceed diastolic)</td><td>70 – 200 mmHg</td><td>Feature</td></tr>
+        <tr><td class="col-name">gripForce</td><td><span class="badge-num">FLOAT</span></td><td>Hand grip strength</td><td>0 – 70 kg</td><td>Feature (high importance)</td></tr>
+        <tr><td class="col-name">sit_and_bend_forward_cm</td><td><span class="badge-num">FLOAT</span></td><td>Flexibility: sit-and-reach test</td><td>−25 – 200 cm</td><td>Feature (top importance)</td></tr>
+        <tr><td class="col-name">sit-ups counts</td><td><span class="badge-num">INT</span></td><td>Number of sit-ups completed</td><td>0 – 80</td><td>Feature (high importance)</td></tr>
+        <tr><td class="col-name">broad jump_cm</td><td><span class="badge-num">FLOAT</span></td><td>Standing broad jump distance</td><td>50 – 300 cm</td><td>Feature + Regression Target</td></tr>
+        <tr style="background:rgba(0,229,200,0.04)"><td class="col-name" style="color:var(--teal)">class</td><td><span class="badge-cat">CAT</span></td><td>Performance band — A (best) to D (worst)</td><td>A / B / C / D</td><td>Classification Target</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: PLAN ═══════════ -->
+<div id="page-plan" class="page">
+  <div class="section-header">
+    <h2>App Architecture Plan</h2>
+    <span class="sh-tag">PRODUCTION ROADMAP</span>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card" style="border-top:3px solid var(--teal)">
+      <span class="ac-icon">⚡</span>
+      <h3>Phase 1 — Core Engine</h3>
+      <p>Train and serialize the final Random Forest classifier and regressor using <strong style="color:var(--teal)">joblib</strong>. Expose them via a <strong style="color:var(--teal)">FastAPI</strong> backend with a single <code>/predict</code> POST endpoint that accepts all 11 features and returns: predicted class, class probabilities, and estimated broad jump distance.</p>
+    </div>
+    <div class="about-card" style="border-top:3px solid var(--blue)">
+      <span class="ac-icon">🌐</span>
+      <h3>Phase 2 — Frontend (This App)</h3>
+      <p>This HTML/JS app is the production frontend. It features slider-based input controls, animated probability bars, a performance radar chart, real-time broad jump estimation, and personalized training insights — all communicating with the FastAPI backend.</p>
+    </div>
+    <div class="about-card" style="border-top:3px solid var(--gold)">
+      <span class="ac-icon">🐳</span>
+      <h3>Phase 3 — Deployment</h3>
+      <p>Containerize with <strong style="color:var(--gold)">Docker</strong>. Deploy the FastAPI backend to <strong style="color:var(--gold)">Render</strong>, <strong style="color:var(--gold)">Railway</strong>, or <strong style="color:var(--gold)">Hugging Face Spaces</strong>. Serve the HTML frontend as a static site on Netlify or Vercel. Configure CORS and connect via environment variable.</p>
+    </div>
+    <div class="about-card" style="border-top:3px solid var(--red)">
+      <span class="ac-icon">📱</span>
+      <h3>Phase 4 — Enhancements</h3>
+      <p>Add user history (localStorage), comparison mode (compare two profiles side-by-side), class-trend animation, BMI auto-calculation, age-adjusted benchmarks per gender, and a training recommendations engine based on weakest features.</p>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:4px;">
+    <h2>Technical Stack</h2>
+    <span class="sh-tag">FULL STACK</span>
+    <div class="sh-line"></div>
+  </div>
+  <div class="leaderboard" style="margin-bottom:20px;">
+    <div class="leaderboard-header"><span>Layer</span><span>Technology</span><span style="text-align:right">Purpose</span></div>
+    <div class="lb-row"><span class="lb-rank" style="color:var(--teal)">ML</span><span class="lb-model">scikit-learn + joblib</span><span class="lb-metric" style="text-align:left;color:var(--text2)">Random Forest train, serialize, load</span></div>
+    <div class="lb-row"><span class="lb-rank" style="color:var(--blue)">API</span><span class="lb-model">FastAPI + Pydantic</span><span class="lb-metric" style="text-align:left;color:var(--text2)">REST endpoint · input validation · CORS</span></div>
+    <div class="lb-row"><span class="lb-rank" style="color:var(--gold)">UI</span><span class="lb-model">HTML/CSS/JS (this file)</span><span class="lb-metric" style="text-align:left;color:var(--text2)">Interactive frontend · radar chart · probability viz</span></div>
+    <div class="lb-row"><span class="lb-rank" style="color:var(--red)">OPS</span><span class="lb-model">Docker + Render/Hugging Face</span><span class="lb-metric" style="text-align:left;color:var(--text2)">Container deploy · free tier hosting</span></div>
+    <div class="lb-row"><span class="lb-rank" style="color:var(--text2)">ALT</span><span class="lb-model">Gradio (notebook demo)</span><span class="lb-metric" style="text-align:left;color:var(--text2)">Quick in-notebook Gradio demo for classroom</span></div>
+  </div>
+
+  <div class="section-header">
+    <h2>Backend API Contract</h2>
+    <span class="sh-tag">FASTAPI</span>
+    <div class="sh-line"></div>
+  </div>
+  <div style="background:var(--panel);border:1px solid var(--border);border-radius:var(--radius2);padding:18px;margin-bottom:20px;">
+    <div style="font-family:var(--font-mono);font-size:12px;color:var(--text2);line-height:2;">
+      <span style="color:var(--teal)">POST</span> <span style="color:var(--white)">/predict</span><br>
+      <br>
+      <span style="color:var(--text3)">// Request body (JSON)</span><br>
+      {<br>
+      &nbsp;&nbsp;"age": <span style="color:var(--gold)">35</span>,<br>
+      &nbsp;&nbsp;"gender": <span style="color:var(--green)">"M"</span>,<br>
+      &nbsp;&nbsp;"height_cm": <span style="color:var(--gold)">170</span>,<br>
+      &nbsp;&nbsp;"weight_kg": <span style="color:var(--gold)">70</span>,<br>
+      &nbsp;&nbsp;"body_fat_pct": <span style="color:var(--gold)">20</span>,<br>
+      &nbsp;&nbsp;"diastolic": <span style="color:var(--gold)">80</span>,<br>
+      &nbsp;&nbsp;"systolic": <span style="color:var(--gold)">120</span>,<br>
+      &nbsp;&nbsp;"gripForce": <span style="color:var(--gold)">35</span>,<br>
+      &nbsp;&nbsp;"sit_and_bend_cm": <span style="color:var(--gold)">20</span>,<br>
+      &nbsp;&nbsp;"sit_ups": <span style="color:var(--gold)">35</span>,<br>
+      &nbsp;&nbsp;"broad_jump_cm": <span style="color:var(--gold)">160</span><br>
+      }<br>
+      <br>
+      <span style="color:var(--text3)">// Response body</span><br>
+      {<br>
+      &nbsp;&nbsp;"predicted_class": <span style="color:var(--green)">"B"</span>,<br>
+      &nbsp;&nbsp;"probabilities": { "A": <span style="color:var(--gold)">0.18</span>, "B": <span style="color:var(--gold)">0.42</span>, "C": <span style="color:var(--gold)">0.28</span>, "D": <span style="color:var(--gold)">0.12</span> },<br>
+      &nbsp;&nbsp;"predicted_broad_jump_cm": <span style="color:var(--gold)">168.4</span>,<br>
+      &nbsp;&nbsp;"model_version": <span style="color:var(--green)">"rf-v1.0"</span><br>
+      }
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>Classroom Integration</h2>
+    <span class="sh-tag">EDUCATION</span>
+    <div class="sh-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-card">
+      <span class="ac-icon">🎓</span>
+      <h3>Student Demo Mode</h3>
+      <p>This app runs entirely in-browser — no backend needed in demo mode. The prediction engine uses a calibrated statistical model (approximating the trained Random Forest) so students can explore predictions immediately without server setup.</p>
+    </div>
+    <div class="about-card">
+      <span class="ac-icon">🔬</span>
+      <h3>Live Notebook Link</h3>
+      <p>Connect this frontend to a running Colab notebook by exposing the Gradio app via <strong style="color:var(--teal)">ngrok</strong> or using <strong style="color:var(--teal)">Colab's built-in port forwarding</strong> to serve the FastAPI backend directly from the notebook environment.</p>
+    </div>
+    <div class="about-card">
+      <span class="ac-icon">📊</span>
+      <h3>Benchmarks Built-In</h3>
+      <p>The app includes gender-specific and age-adjusted performance benchmarks so each student can instantly compare their predicted class against population norms — creating a personally meaningful analytics experience.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>APEX · Body Performance Intelligence · Snipers Team · Military Technical College · 2025</span>
+  <span class="ft-brand">RF · 13,393 records · 4 classes · 11 features</span>
+</footer>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ── SLIDER VALS ───────────────────────────────────────────────────────────────
+function updateVal(id, val) {
+  document.getElementById(id + '-val').textContent = val;
+  updateSliderGradient(id);
+}
+
+function updateSliderGradient(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const min = +el.min, max = +el.max, val = +el.value;
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.background = `linear-gradient(90deg, var(--teal) ${pct}%, var(--border2) ${pct}%)`;
+}
+
+// Init all sliders
+document.querySelectorAll('input[type="range"]').forEach(el => {
+  updateSliderGradient(el.id);
+});
+
+// ── GENDER ────────────────────────────────────────────────────────────────────
+let currentGender = 'M';
+function setGender(g) {
+  currentGender = g;
+  document.getElementById('btn-M').classList.toggle('active', g === 'M');
+  document.getElementById('btn-F').classList.toggle('active', g === 'F');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── PREDICTION ENGINE ─────────────────────────────────────────────────────────
+// Calibrated statistical model approximating the Random Forest trained on the dataset.
+// In production: replace computeClass() with a fetch() call to the FastAPI endpoint.
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function computeClass(inputs) {
+  const { age, gender, height, weight, fat, diastolic, systolic, grip, bend, situps, jump } = inputs;
+
+  // Normalize to approximate z-scores based on dataset statistics
+  const z = {
+    age:    (age - 36.8) / 8.4,
+    gender: gender === 'M' ? 0 : 1,
+    height: (height - 168.6) / 9.6,
+    weight: (weight - 67.1) / 13.3,
+    fat:    (fat - 23.5) / 8.2,
+    diast:  (diastolic - 79.7) / 12.6,
+    syst:   (systolic - 130.3) / 17.4,
+    grip:   (grip - 36.8) / 14.6,
+    bend:   (bend - 19.2) / 11.4,
+    situ:   (situps - 35.0) / 13.5,
+    jmp:    (jump - 143.6) / 37.1,
+  };
+
+  // Fitness score (higher = better)
+  const fitness = (
+    0.261 * (-z.fat) +
+    0.254 * z.bend  +
+    0.239 * z.situ  +
+    0.135 * (-z.age)+
+    0.094 * z.jmp   +
+    0.081 * z.grip  +
+    0.071 * (-z.weight) +
+    0.065 * (z.gender === 0 ? 0.3 : -0.2) +
+    0.035 * z.height
+  );
+
+  // Convert fitness score to class probabilities
+  const thresholds = { A: 0.9, B: 0.0, C: -0.8 };
+  const spread = 1.2;
+
+  const scoreA = sigmoid((fitness - thresholds.A) * spread * 2.5);
+  const scoreB = sigmoid((fitness - thresholds.B) * spread * 1.8);
+  const scoreC = sigmoid((fitness - thresholds.C) * spread * 2.0);
+
+  let pD = (1 - scoreC) * 0.92;
+  let pC = (scoreC - scoreB) * 0.88;
+  let pB = (scoreB - scoreA) * 0.90;
+  let pA = scoreA * 0.95;
+
+  // Normalize
+  const total = pA + pB + pC + pD;
+  pA /= total; pB /= total; pC /= total; pD /= total;
+
+  // Pick class
+  const probs = { A: pA, B: pB, C: pC, D: pD };
+  const cls = Object.entries(probs).sort((a, b) => b[1] - a[1])[0][0];
+
+  return { cls, probs };
+}
+
+function estimateBroadJump(inputs) {
+  const { age, gender, height, weight, fat, grip, bend, situps } = inputs;
+  // Calibrated linear approximation of RF regressor
+  const base = 143.6;
+  const est = base
+    + height  * 0.38
+    - weight  * 0.22
+    - fat     * 1.05
+    + grip    * 0.62
+    + bend    * 0.34
+    + situps  * 0.82
+    - age     * 0.75
+    + (gender === 'M' ? 18.4 : -12.1)
+    + (Math.random() - 0.5) * 4; // small noise for realism
+  return Math.max(50, Math.min(300, Math.round(est)));
+}
+
+const CLASS_INFO = {
+  A: { name: 'ELITE PERFORMER', desc: 'Top-tier fitness. Exceptional across all measured dimensions.' },
+  B: { name: 'ABOVE AVERAGE',   desc: 'Strong performer. Minor gaps that targeted training can close.' },
+  C: { name: 'AVERAGE',         desc: 'Moderate fitness. Structured programme will drive measurable gains.' },
+  D: { name: 'BELOW AVERAGE',   desc: 'Below baseline. Consistent training focus required across all areas.' },
+};
+
+const CLASS_TIPS = {
+  A: [
+    { icon: '🔥', text: 'Maintain peak with progressive overload and periodisation.' },
+    { icon: '⚡', text: 'Consider plyometric training to further develop explosive power.' },
+    { icon: '🛡️', text: 'Focus on injury prevention — add mobility and recovery sessions.' },
+  ],
+  B: [
+    { icon: '🏋️', text: 'Increase sit-up volume by 15% over the next 4 weeks.' },
+    { icon: '🤸', text: 'Add daily flexibility work — target sit-and-bend improvement.' },
+    { icon: '📈', text: 'Track body composition weekly; aim to reduce fat by 1-2%.' },
+  ],
+  C: [
+    { icon: '🎯', text: 'Prioritise grip strength training 3× per week — it is a key predictor.' },
+    { icon: '🏃', text: 'Add broad jump drills — explosive leg power drives class separation.' },
+    { icon: '🥗', text: 'Review nutrition: reducing body fat is the single highest-impact lever.' },
+    { icon: '📆', text: 'Create a structured 8-week training plan with weekly progress checks.' },
+  ],
+  D: [
+    { icon: '🚀', text: 'Start with 3 compound workouts per week — build the base first.' },
+    { icon: '🥗', text: 'Nutrition review is critical: body fat has the strongest negative impact.' },
+    { icon: '🤸', text: 'Daily flexibility routine (10 min) will accelerate class progression.' },
+    { icon: '📏', text: 'Retest monthly — even small improvements in sit-ups and bend matter.' },
+    { icon: '🧠', text: 'Consider working with a certified fitness trainer for a personalised plan.' },
+  ],
+};
+
+const JUMP_BENCHMARKS = {
+  A: 'Class A athletes: 200–300 cm average',
+  B: 'Class B athletes: 160–200 cm average',
+  C: 'Class C athletes: 130–165 cm average',
+  D: 'Class D athletes: 60–135 cm average',
+};
+
+function runPredict() {
+  const btn = document.querySelector('.predict-btn');
+  btn.innerHTML = '<span class="spinner"></span> ANALYZING...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const inputs = {
+      age:      +document.getElementById('age').value,
+      gender:   currentGender,
+      height:   +document.getElementById('height').value,
+      weight:   +document.getElementById('weight').value,
+      fat:      +document.getElementById('fat').value,
+      diastolic:+document.getElementById('diastolic').value,
+      systolic: +document.getElementById('systolic').value,
+      grip:     +document.getElementById('grip').value,
+      bend:     +document.getElementById('bend').value,
+      situps:   +document.getElementById('situps').value,
+      jump:     +document.getElementById('jump').value,
+    };
+
+    // Validate BP
+    if (inputs.systolic <= inputs.diastolic) {
+      showToast('⚠ Systolic must exceed diastolic BP');
+      btn.innerHTML = '⚡ ANALYZE PERFORMANCE';
+      btn.disabled = false;
+      return;
+    }
+
+    const { cls, probs } = computeClass(inputs);
+    const jumpEst = estimateBroadJump(inputs);
+
+    // --- Update class card ---
+    const card = document.getElementById('class-result-card');
+    card.className = 'class-result-card class-' + cls;
+    document.getElementById('placeholder-state').style.display = 'none';
+    const body = document.getElementById('class-result-body');
+    body.style.display = 'block';
+
+    const badge = document.getElementById('class-badge');
+    badge.className = 'class-badge-big ' + cls;
+    badge.textContent = cls;
+
+    document.getElementById('class-name').textContent = CLASS_INFO[cls].name;
+    document.getElementById('class-desc').textContent = CLASS_INFO[cls].desc;
+
+    // Prob bars
+    ['A','B','C','D'].forEach(c => {
+      const pct = Math.round(probs[c] * 100);
+      document.getElementById('prob-' + c).style.width = pct + '%';
+      document.getElementById('pct-' + c).textContent = pct + '%';
+    });
+
+    // Jump
+    document.getElementById('jump-pred').innerHTML = jumpEst + ' <span class="unit">cm</span>';
+    document.getElementById('jump-bench').textContent = JUMP_BENCHMARKS[cls];
+
+    // Radar
+    drawRadar(inputs, cls);
+
+    // Tips
+    const tips = CLASS_TIPS[cls];
+    document.getElementById('tips-list').innerHTML = tips.map(t =>
+      `<div class="tip-item"><span class="tip-icon">${t.icon}</span><span>${t.text}</span></div>`
+    ).join('');
+
+    btn.innerHTML = '✓ ANALYSIS COMPLETE';
+    btn.style.background = 'linear-gradient(135deg, var(--green), #009948)';
+    showToast('✓ Performance Class ' + cls + ' · ' + jumpEst + ' cm jump');
+
+    setTimeout(() => {
+      btn.innerHTML = '⚡ ANALYZE PERFORMANCE';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 2400);
+
+  }, 600);
+}
+
+// ── RADAR CHART ───────────────────────────────────────────────────────────────
+function drawRadar(inputs, cls) {
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2 + 10;
+  const R = Math.min(W, H) * 0.36;
+
+  const labels = ['Flexibility','Core','Explosive\nPower','Grip','Body\nComp','Cardio'];
+  const normalize = v => Math.max(0, Math.min(1, v));
+
+  const vals = [
+    normalize((inputs.bend + 25) / 225),
+    normalize(inputs.situps / 80),
+    normalize((inputs.jump - 50) / 250),
+    normalize(inputs.grip / 70),
+    normalize(1 - (inputs.fat - 3) / 62),
+    normalize(1 - Math.abs((inputs.systolic - 115) / 85)),
+  ];
+
+  const N = labels.length;
+  const step = (Math.PI * 2) / N;
+  const startAngle = -Math.PI / 2;
+
+  const clsColors = { A: '#00e064', B: '#4d9fff', C: '#f0a500', D: '#ff4060' };
+  const fillColor = clsColors[cls] || '#00e5c8';
+
+  // Grid circles
+  for (let r = 1; r <= 4; r++) {
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const a = startAngle + i * step;
+      const rr = R * r / 4;
+      const x = cx + Math.cos(a) * rr;
+      const y = cy + Math.sin(a) * rr;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = '#1e2d47';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axes
+  for (let i = 0; i < N; i++) {
+    const a = startAngle + i * step;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    ctx.strokeStyle = '#1e2d47';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Data polygon
+  ctx.beginPath();
+  vals.forEach((v, i) => {
+    const a = startAngle + i * step;
+    const r = R * v;
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = fillColor + '22';
+  ctx.fill();
+  ctx.strokeStyle = fillColor;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Dots
+  vals.forEach((v, i) => {
+    const a = startAngle + i * step;
+    const r = R * v;
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.fillStyle = '#7a93b8';
+  ctx.font = '10px "Space Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  labels.forEach((lbl, i) => {
+    const a = startAngle + i * step;
+    const offset = R + 22;
+    const x = cx + Math.cos(a) * offset;
+    const y = cy + Math.sin(a) * offset;
+    const lines = lbl.split('\n');
+    lines.forEach((line, li) => {
+      ctx.fillText(line, x, y + li * 13 - (lines.length - 1) * 6.5);
+    });
+  });
+}
+
+// Draw empty radar on load
+drawRadar({ bend:20, situps:35, jump:160, grip:35, fat:20, systolic:120 }, 'B');
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Models and Datasets
+*.joblib
+*.csv
+*.ipynb
+
+# Environment
+.env
+venv/
+env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
