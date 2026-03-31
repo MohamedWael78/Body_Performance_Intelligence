@@ -1,0 +1,119 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   APEX · Navigation Bar
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 62px;
+  background: rgba(8,12,18,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background var(--trans);
+}
+
+nav::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--teal-glow), transparent);
+  opacity: 0.5;
+}
+
+/* ── Logo ────────────────────────────────────────────────────────────────────── */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--white);
+  user-select: none;
+}
+
+.nav-logo .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 10px var(--teal), 0 0 20px var(--teal-glow);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--teal), 0 0 20px var(--teal-glow); }
+  50%      { opacity: 0.4; box-shadow: 0 0 4px var(--teal); }
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────────── */
+.nav-tabs { display: flex; gap: 4px; }
+
+.nav-tab {
+  padding: 6px 16px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text2);
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all var(--trans);
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--teal-dim), transparent);
+  opacity: 0;
+  transition: opacity var(--trans);
+}
+
+.nav-tab:hover {
+  color: var(--teal);
+  background: var(--teal-dim);
+}
+.nav-tab:hover::before { opacity: 1; }
+
+.nav-tab.active {
+  color: var(--teal);
+  background: var(--teal-dim);
+  border: 1px solid rgba(0,229,200,0.3);
+  box-shadow: 0 0 12px rgba(0,229,200,0.1);
+}
+
+/* ── Badge ───────────────────────────────────────────────────────────────────── */
+.nav-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--teal2);
+  background: var(--teal-dim);
+  border: 1px solid rgba(0,229,200,0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  transition: all var(--trans);
+}
+
+.nav-badge:hover {
+  border-color: rgba(0,229,200,0.4);
+  box-shadow: 0 0 12px rgba(0,229,200,0.12);
+}

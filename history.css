@@ -1,0 +1,213 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   APEX · History & Compare Styles
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.history-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8, 12, 18, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.history-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.history-dialog {
+  background: var(--panel-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.history-modal.show .history-dialog {
+  transform: translateY(0);
+}
+
+.history-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-header h3 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text2);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: var(--white);
+}
+
+.history-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.history-item:hover, .history-item.selected {
+  border-color: var(--teal);
+  background: var(--panel2);
+}
+
+.history-item .hi-date {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.history-item .hi-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.hi-badge {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+}
+
+.hi-jump {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--white);
+}
+
+.compare-action-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background: rgba(0,229,200,0.1);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  text-transform: uppercase;
+}
+.compare-action-btn:disabled {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text3);
+  cursor: not-allowed;
+}
+.compare-action-btn:not(:disabled):hover {
+  background: var(--teal);
+  color: var(--bg);
+}
+
+/* Compare View */
+.compare-view {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+}
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.compare-col {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.cc-header {
+  font-family: var(--font-head);
+  font-size: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+.cc-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+  font-size: 14px;
+}
+.cc-lbl { color: var(--text2); }
+.cc-val { font-family: var(--font-mono); color: var(--white); }
+
+.trend-container {
+  margin-top: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.trend-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.bmi-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: bold;
+}
+.bmi-badge.Normal { background: var(--green-dim); color: var(--green); }
+.bmi-badge.Underweight { background: var(--blue-dim); color: var(--blue); }
+.bmi-badge.Overweight { background: var(--gold-dim); color: var(--gold); }
+.bmi-badge.Obese { background: var(--red-dim); color: var(--red); }

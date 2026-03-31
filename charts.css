@@ -1,0 +1,29 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   APEX · Radar Chart Card
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.radar-card {
+  background: var(--panel);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 18px;
+  transition: border-color var(--trans);
+}
+.radar-card:hover { border-color: var(--border2); }
+
+.radar-card h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+#radarCanvas {
+  width: 100%;
+  max-width: 340px;
+  display: block;
+  margin: 0 auto;
+}
